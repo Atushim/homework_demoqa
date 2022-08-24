@@ -1,61 +1,69 @@
 package com.demoqa.tests;
 
 
-import com.codeborne.selenide.Configuration;
 import com.demoqa.pages.RegistrationFormPage;
-import org.junit.jupiter.api.BeforeAll;
+import com.github.javafaker.Faker;
 import org.junit.jupiter.api.Test;
 
+import java.util.Locale;
 
-import java.io.File;
-
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selectors.byText;
-import static com.codeborne.selenide.Selenide.*;
+import static com.demoqa.utils.RandomUtils.*;
 
 
-public class TestDemoQa {
+public class TestDemoQa extends TestBase {
     RegistrationFormPage registrationFormPage = new RegistrationFormPage();
+    static Faker faker = new Faker(new Locale("EN"));
 
-    @BeforeAll
-    static void configureBefore() {
-        Configuration.baseUrl = "https://demoqa.com";
-    }
+    public static String firstName = faker.name().firstName(),
+            lastName = faker.name().lastName(),
+            email = faker.internet().emailAddress(),
+            gender = getRandomGender(),
+            phoneNumber = faker.phoneNumber().subscriberNumber(10),
+            day = faker.number().numberBetween(1, 30) + "",
+            month = getRandomMonth(),
+            year = faker.number().numberBetween(1990, 2000) + "",
+            subject = "Maths",
+            hobby = getRandomHobby(),
+            filePath = "src/test/resources/cat.jpg",
+            fileName = "cat.jpg",
+            address = faker.address().fullAddress(),
+            state = "Haryana",
+            city = "Karnal";
 
 
     @Test
     void fillPracticeForm() {
+
         //Заполнение полей
 
         registrationFormPage.openPage()
-                .setFirstName("Daniil")
-                .setLastName("Ivanov")
-                .setEmail("test@gmail.com")
-                .setGender("Male")
-                .setNumber("1111111111")
-                .setBirthDate("03", "October", "1997")
-                .setSubjects("Maths")
-                .setHobbies("Sports")
-                .uploadFile("src/test/resources/cat.jpg")
-                .setAddress("Italian street, 19, St. Petersburg,")
-                .setState("Haryana")
-                .setCity("Karnal")
+                .setFirstName(firstName)
+                .setLastName(lastName)
+                .setEmail(email)
+                .setGender(gender)
+                .setNumber(phoneNumber)
+                .setBirthDate(day, month, year)
+                .setSubjects(subject)
+                .setHobbies(hobby)
+                .uploadFile(filePath)
+                .setAddress(address)
+                .setState(state)
+                .setCity(city)
                 .submit();
 
 
         //Проверка тестовой формы
         registrationFormPage.checkResultsTableVisible()
-                .checkResults("Student Name", "Daniil Ivanov")
-                .checkResults("Student Email", "test@gmail.com")
-                .checkResults("Gender", "Male")
-                .checkResults("Gender", "Male")
-                .checkResults("Mobile", "1111111111")
-                .checkResults("Date of Birth", "03 October,1997")
-                .checkResults("Subjects", "Maths")
-                .checkResults("Hobbies", "Sports")
-                .checkResults("Picture", "cat.jpg")
-                .checkResults("Address", "Italian street, 19, St. Petersburg,")
-                .checkResults("State and City", "Haryana Karnal")
+                .checkResults("Student Name", firstName + " " + lastName)
+                .checkResults("Student Email", email)
+                .checkResults("Gender", gender)
+                .checkResults("Mobile", phoneNumber)
+                .checkResults("Date of Birth", day + " " + month + "," + year)
+                .checkResults("Subjects", subject)
+                .checkResults("Hobbies", hobby)
+                .checkResults("Picture", fileName)
+                .checkResults("Address", address)
+                .checkResults("State and City", state + " " + city)
                 .closeResultModal();
 
 
